@@ -68,7 +68,14 @@ const vendorSchema = new mongoose.Schema({
             required: true,
         },
     },
-
+    fssai_license: {
+        number: { type: String },
+        status: {
+            type: String,
+            enum: ['pending', 'verified', 'rejected'],
+            default: 'pending'
+        }
+    },
     order_history: [
         {
             type: mongoose.Schema.Types.ObjectId,
