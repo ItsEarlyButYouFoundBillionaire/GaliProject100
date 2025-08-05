@@ -14,9 +14,12 @@ router.post('/vendors/register', adminController.registerVendorByAdmin);
 router.get('/vendors', adminController.getAllVendors);
 
 // Admin gets vendor earnings
-router.get('/vendors/:vendorId/earnings', adminController.getVendorEarnings);
+router.get('/vendors/:vendorId/earnings', adminController.getPlatformEarnings);
 
 // Admin gets overall platform earnings
 router.get('/earnings', adminController.getPlatformEarnings);
+
+router.get('/revenue', adminController.getTotalRevenue);
+
 
 module.exports = router;

@@ -1,10 +1,16 @@
-const Vendor = require('../models/Vendor');
+const {
+    updateVendorProfileService,
+    setVendorAvailabilityService,
+    getMenuItemsService,
+    getVendorProfileService,
+    updateMenuItemsService
+} = require('../services/vendor.service');
 
 // 1. Get Vendor Profile
 const getVendorProfile = async (req, res) => {
     try {
         const vendorId = req.params.id;
-        const vendor = await Vendor.findById(vendorId).select('-order_history -__v');
+        const vendor = await getVendorProfileService(vendorId);
         if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
 
         res.json(vendor);
@@ -13,20 +19,13 @@ const getVendorProfile = async (req, res) => {
     }
 };
 
-// 2. Update Vendor Profile (excluding menu)
+// 2. Update Vendor Profile
 const updateVendorProfile = async (req, res) => {
     try {
         const vendorId = req.params.id;
         const updates = req.body;
 
-        updates.last_updated = new Date();
-
-        const updatedVendor = await Vendor.findByIdAndUpdate(
-            vendorId,
-            { $set: updates },
-            { new: true }
-        );
-
+        const updatedVendor = await updateVendorProfileService(vendorId, updates);
         if (!updatedVendor) return res.status(404).json({ message: 'Vendor not found' });
 
         res.json(updatedVendor);
@@ -41,14 +40,10 @@ const updateMenuItems = async (req, res) => {
         const vendorId = req.params.id;
         const { menu_items } = req.body;
 
-        const vendor = await Vendor.findById(vendorId);
-        if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
+        const result = await updateMenuItemsService(vendorId, menu_items);
+        if (!result) return res.status(404).json({ message: 'Vendor not found' });
 
-        vendor.menu_items = menu_items;
-        vendor.last_updated = new Date();
-        await vendor.save();
-
-        res.json({ message: 'Menu updated successfully', menu_items });
+        res.json({ message: 'Menu updated successfully', menu_items: result });
     } catch (error) {
         res.status(500).json({ message: 'Error updating menu items', error });
     }
@@ -58,10 +53,10 @@ const updateMenuItems = async (req, res) => {
 const getMenuItems = async (req, res) => {
     try {
         const vendorId = req.params.id;
-        const vendor = await Vendor.findById(vendorId).select('menu_items');
-        if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
+        const menu_items = await getMenuItemsService(vendorId);
+        if (!menu_items) return res.status(404).json({ message: 'Vendor not found' });
 
-        res.json(vendor.menu_items);
+        res.json(menu_items);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching menu items', error });
     }
@@ -77,23 +72,19 @@ const setVendorAvailability = async (req, res) => {
             return res.status(400).json({ message: 'Invalid active_status' });
         }
 
-        const updatedVendor = await Vendor.findByIdAndUpdate(
-            vendorId,
-            { active_status, last_updated: new Date() },
-            { new: true }
-        );
-
-        if (!updatedVendor) return res.status(404).json({ message: 'Vendor not found' });
+        const updated = await setVendorAvailabilityService(vendorId, active_status);
+        if (!updated) return res.status(404).json({ message: 'Vendor not found' });
 
         res.json({ message: 'Vendor availability updated', active_status });
     } catch (error) {
         res.status(500).json({ message: 'Error setting availability', error });
     }
 };
+
 module.exports = {
     updateVendorProfile,
     setVendorAvailability,
+    updateMenuItems,
     getMenuItems,
-    getVendorProfile,
-    setVendorAvailability
+    getVendorProfile
 };

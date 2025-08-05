@@ -1,11 +1,11 @@
-const Vendor = require('../models/Vendor');
-const Customer = require('../models/Customer');
-const DeliveryAgent = require('../models/DeliveryAgent');
+// controllers/admin.controller.js
 
-// Get all vendors
-exports.getAllVendors = async (req, res) => {
+const adminService = require('../services/admin.service');
+
+// ✅ Get all vendors
+const getAllVendors = async (req, res) => {
     try {
-        const vendors = await Vendor.find();
+        const vendors = await adminService.getAllVendors();
         res.status(200).json({ success: true, data: vendors });
     } catch (error) {
         console.error('Error fetching vendors:', error);
@@ -13,10 +13,10 @@ exports.getAllVendors = async (req, res) => {
     }
 };
 
-// Get all customers
-exports.getAllCustomers = async (req, res) => {
+// ✅ Get all customers
+const getAllCustomers = async (req, res) => {
     try {
-        const customers = await Customer.find();
+        const customers = await adminService.getAllCustomers();
         res.status(200).json({ success: true, data: customers });
     } catch (error) {
         console.error('Error fetching customers:', error);
@@ -24,10 +24,10 @@ exports.getAllCustomers = async (req, res) => {
     }
 };
 
-// Get all delivery agents
-exports.getAllDeliveryAgents = async (req, res) => {
+// ✅ Get all delivery agents
+const getAllDeliveryAgents = async (req, res) => {
     try {
-        const agents = await DeliveryAgent.find();
+        const agents = await adminService.getAllDeliveryAgents();
         res.status(200).json({ success: true, data: agents });
     } catch (error) {
         console.error('Error fetching delivery agents:', error);
@@ -35,112 +35,112 @@ exports.getAllDeliveryAgents = async (req, res) => {
     }
 };
 
-// Approve a vendor
-exports.approveVendor = async (req, res) => {
+// ✅ Approve a vendor
+const approveVendor = async (req, res) => {
     try {
         const { vendorId } = req.params;
-
-        const vendor = await Vendor.findByIdAndUpdate(
-            vendorId,
-            { isApproved: true, status: 'active' },
-            { new: true }
-        );
-
-        if (!vendor) {
-            return res.status(404).json({ success: false, message: 'Vendor not found' });
-        }
-
-        res.status(200).json({ success: true, message: 'Vendor approved', data: vendor });
+        const updatedVendor = await adminService.approveVendor(vendorId);
+        res.status(200).json({ success: true, data: updatedVendor });
     } catch (error) {
         console.error('Error approving vendor:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
 
-// Approve a delivery agent
-exports.approveDeliveryAgent = async (req, res) => {
+// ✅ Approve a delivery agent
+const approveDeliveryAgent = async (req, res) => {
     try {
         const { agentId } = req.params;
-
-        const agent = await DeliveryAgent.findByIdAndUpdate(
-            agentId,
-            { isApproved: true, status: 'active' },
-            { new: true }
-        );
-
-        if (!agent) {
-            return res.status(404).json({ success: false, message: 'Delivery agent not found' });
-        }
-
-        res.status(200).json({ success: true, message: 'Delivery agent approved', data: agent });
+        const updatedAgent = await adminService.approveDeliveryAgent(agentId);
+        res.status(200).json({ success: true, data: updatedAgent });
     } catch (error) {
         console.error('Error approving delivery agent:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
 
-// Ban a vendor
-exports.banVendor = async (req, res) => {
+// ✅ Ban a vendor
+const banVendor = async (req, res) => {
     try {
         const { vendorId } = req.params;
-
-        const vendor = await Vendor.findByIdAndUpdate(
-            vendorId,
-            { status: 'banned' },
-            { new: true }
-        );
-
-        if (!vendor) {
-            return res.status(404).json({ success: false, message: 'Vendor not found' });
-        }
-
-        res.status(200).json({ success: true, message: 'Vendor banned', data: vendor });
+        const bannedVendor = await adminService.banVendor(vendorId);
+        res.status(200).json({ success: true, data: bannedVendor });
     } catch (error) {
         console.error('Error banning vendor:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
 
-// Ban a customer
-exports.banCustomer = async (req, res) => {
+// ✅ Ban a customer
+const banCustomer = async (req, res) => {
     try {
         const { customerId } = req.params;
-
-        const customer = await Customer.findByIdAndUpdate(
-            customerId,
-            { status: 'banned' },
-            { new: true }
-        );
-
-        if (!customer) {
-            return res.status(404).json({ success: false, message: 'Customer not found' });
-        }
-
-        res.status(200).json({ success: true, message: 'Customer banned', data: customer });
+        const bannedCustomer = await adminService.banCustomer(customerId);
+        res.status(200).json({ success: true, data: bannedCustomer });
     } catch (error) {
         console.error('Error banning customer:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
 
-// Ban a delivery agent
-exports.banDeliveryAgent = async (req, res) => {
+// ✅ Ban a delivery agent
+const banDeliveryAgent = async (req, res) => {
     try {
         const { agentId } = req.params;
-
-        const agent = await DeliveryAgent.findByIdAndUpdate(
-            agentId,
-            { status: 'banned' },
-            { new: true }
-        );
-
-        if (!agent) {
-            return res.status(404).json({ success: false, message: 'Delivery agent not found' });
-        }
-
-        res.status(200).json({ success: true, message: 'Delivery agent banned', data: agent });
+        const bannedAgent = await adminService.banDeliveryAgent(agentId);
+        res.status(200).json({ success: true, data: bannedAgent });
     } catch (error) {
         console.error('Error banning delivery agent:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
+};
+
+// ✅ Get total revenue
+const getTotalRevenue = async (req, res) => {
+    try {
+        const totalRevenue = await adminService.getTotalRevenue();
+        res.status(200).json({ success: true, totalRevenue });
+    } catch (error) {
+        console.error('Error fetching revenue:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+// ✅ Get platform earnings
+const getPlatformEarnings = async (req, res) => {
+    try {
+        const earnings = await adminService.getPlatformEarnings();
+        res.status(200).json({ success: true, earnings });
+    } catch (error) {
+        console.error('Error fetching platform earnings:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+// ✅ Register vendor by admin
+const registerVendorByAdmin = async (req, res) => {
+    try {
+        const vendor = await adminService.registerVendorByAdmin(req.body);
+        if (!vendor) {
+            return res.status(400).json({ success: false, message: 'Vendor already exists' });
+        }
+        res.status(201).json({ success: true, data: vendor });
+    } catch (error) {
+        console.error('Error registering vendor:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+module.exports = {
+    getAllVendors,
+    getAllCustomers,
+    getAllDeliveryAgents,
+    approveVendor,
+    approveDeliveryAgent,
+    banVendor,
+    banCustomer,
+    banDeliveryAgent,
+    getTotalRevenue,
+    getPlatformEarnings,
+    registerVendorByAdmin,
 };
