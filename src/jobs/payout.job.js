@@ -21,7 +21,7 @@ const payoutJob = () => {
                 });
 
                 const totalEarnings = todayOrders.reduce((sum, o) => sum + o.total_amount, 0);
-
+                // reduce = Loops through all orders and adds only those that have been delivered to the deliveredOrders array.
                 logger.info(`Vendor ${vendor.name} earned ₹${totalEarnings} today.`);
             }
 
