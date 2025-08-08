@@ -1,10 +1,9 @@
-const cron = require('cron');
-const vendor = require('../models/Vendor');
-const order = require('../models/Order');
+const cron = require('node-cron'); // Correct cron package
+const Vendor = require('../models/Vendor');
+const Order = require('../models/Order');
 const sendWhatsappMessage = require('../services/whatsapp.service');
 const logger = require('../utils/logger');
 
-// Runs daily at 9:00 PM
 const notificationJob = () => {
     cron.schedule('0 21 * * *', async () => {
         logger.info('Starting daily notification job...');
@@ -13,7 +12,6 @@ const notificationJob = () => {
             const vendors = await Vendor.find();
 
             for (const vendor of vendors) {
-                // Calculate today's stats
                 const todayOrders = await Order.find({
                     vendor: vendor._id,
                     createdAt: {
@@ -23,10 +21,9 @@ const notificationJob = () => {
                 });
 
                 const totalOrders = todayOrders.length;
-                const totalEarnings = todayOrders.reduce((sum, order) => sum + order.total_amount, 0);
+                const totalEarnings = todayOrders.reduce((sum, o) => sum + o.total_amount, 0);
 
-                // Send WhatsApp summary (template message later)
-                await sendWhatsAppMessage(vendor.phone, `📊 Today you had ${totalOrders} orders and earned ₹${totalEarnings}.`);
+                await sendWhatsappMessage(vendor.phone, `📊 Today you had ${totalOrders} orders and earned ₹${totalEarnings}.`);
 
                 logger.info(`Notification sent to ${vendor.name}`);
             }
@@ -37,6 +34,5 @@ const notificationJob = () => {
         }
     });
 };
-module.exports = {
-    notificationJob,
-}
+
+module.exports = { notificationJob };
