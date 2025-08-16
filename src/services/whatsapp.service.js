@@ -47,3 +47,73 @@
    throw error;
   }
  }
+
+
+ // send location request message
+ export const sendLocationMessage = async (to,templateName,languageCode,parameter=[])=>{
+  try {
+   const payload = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    type: "interactive",
+    interactive: {
+     type: "location_request_message",
+     body: {
+      text: "Let's start with your pickup. You can either manually *enter an address* or *share your current location*."
+     },
+     action: {
+      name: "send_location"
+     }
+    }
+   };
+   const response = await axios.post(WHATSAPP_API_URL, payload, {
+    headers: {
+     Authorization: `Bearer ${ACCESS_TOKEN}`,
+     "Content-Type": "application/json"
+    }
+   });
+
+   console.log(" Location message sent:", response.data);
+   return response.data;
+
+  }catch (error){
+   console.error("Error sending the location request ",error.response?.data||error.message);
+   throw error;
+  }
+ }
+
+ // send interactive list message
+ export const sendListMessage = async (to, bodyText, buttonText, sections) => {
+  try {
+   const payload = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    type: "interactive",
+    interactive: {
+     type: "list",
+     body: {
+      text: bodyText
+     },
+     action: {
+      button: buttonText, // e.g., "View Menu"
+      sections: sections  // Array of sections with titles and rows
+     }
+    }
+   };
+
+   const response = await axios.post(WHATSAPP_API_URL, payload, {
+    headers: {
+     Authorization: `Bearer ${ACCESS_TOKEN}`,
+     "Content-Type": "application/json"
+    }
+   });
+
+   console.log("List message sent:", response.data);
+   return response.data;
+  } catch (error) {
+   console.error("Error sending list message", error.response?.data || error.message);
+   throw error;
+  }
+ };
