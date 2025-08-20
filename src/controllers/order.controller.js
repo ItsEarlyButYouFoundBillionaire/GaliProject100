@@ -165,6 +165,7 @@
 //     cancelOrder,
 //     getOrderById,
 // };
+const OrderService = require('../services/order.service')
 const {
     placeOrderService,
     getOrdersByCustomerService,
@@ -179,10 +180,18 @@ const {
 const placeOrder = async (req, res) => {
     try {
         const order = await placeOrderService(req.body);
+
+        // Dynamic summary for WhatsApp
+        const summary = {
+            items: order.order_items.map(i => `${i.name} x${i.quantity} = ₹${i.price * i.quantity}`),
+            total: order.total_price,
+        };
+
         res.status(200).json({
             success: true,
             message: 'Order placed successfully',
             order,
+            summary, // <-- send order summary so WhatsApp can use it
         });
     } catch (error) {
         console.log('Error placing order:', error);
