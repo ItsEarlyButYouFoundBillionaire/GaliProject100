@@ -218,5 +218,5 @@
    console.error("Error sending order summary", error.response?.data || error.message);
    throw error;
   }
- };
+ }
 
