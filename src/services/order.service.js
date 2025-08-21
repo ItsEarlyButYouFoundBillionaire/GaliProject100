@@ -27,6 +27,36 @@ const placeOrderService = async ({
     });
     return newOrder;
 };
+// 5. Create a draft order (before payment confirmation)
+const createOrderDraftService = async ({
+                                           customerID,
+                                           vendorID,
+                                           order_items,
+                                           delivery_address,
+                                           packaging_charge = 0,
+                                           promo_code_applied = null,
+                                       }) => {
+    // calculate total from items
+    const itemsTotal = order_items.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+    );
+    const total_price = itemsTotal + packaging_charge;
+
+    const draftOrder = await Order.create({
+        customer: customerID,
+        vendor: vendorID,
+        order_items,
+        total_price,
+        delivery_address,
+        packaging_charge,
+        promo_code_applied,
+        status: 'draft', // 👈 important difference
+    });
+
+    return draftOrder;
+};
+
 
 // 2. Get orders by customer
 const getOrdersByCustomerService = async (id) => {
@@ -63,6 +93,7 @@ const getOrderByIdService = async (orderID) => {
 
 
 module.exports = {
+    createOrderDraftService,
     placeOrderService,
     getOrdersByCustomerService,
     getOrdersByVendorService,
