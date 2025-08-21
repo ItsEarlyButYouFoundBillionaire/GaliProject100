@@ -1,9 +1,11 @@
 const {
+    getVendorMenuById,
     updateVendorProfileService,
     setVendorAvailabilityService,
     getMenuItemsService,
     getVendorProfileService,
-    updateMenuItemsService
+    updateMenuItemsService,
+    getNearByVendorsService,
 } = require('../services/vendor.service');
 
 // 1. Get Vendor Profile
@@ -80,8 +82,38 @@ const setVendorAvailability = async (req, res) => {
         res.status(500).json({ message: 'Error setting availability', error });
     }
 };
+// 6. get nearby Vendors
+const getNearByVendors = async (req, res) => {
+    try {
+        const { latitude, longitude } =
+            req.body.entry[0].changes[0].value.messages[0].location;
+
+        const vendors = await getNearByVendorsService(latitude, longitude);
+
+        return res.status(200).json({ success: true, vendors });
+    } catch (error) {
+        console.error("Error while showing the stalls nearby", error);
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+};
+//7. getting the menu by the vendor id
+const getVendorMenuById = async (req, res) => {
+    try {
+        const { vendorId } = req.params;
+        const menuItems = await vendorService.getVendorMenuById(vendorId);
+        return res.status(200).json({ success: true, menu: menuItems });
+    } catch (error) {
+        console.error("Error while fetching vendor menu:", error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+};
 
 module.exports = {
+    getVendorMenuById,
+    getNearByVendorsService,
     updateVendorProfile,
     setVendorAvailability,
     updateMenuItems,

@@ -37,8 +37,39 @@ const setVendorAvailabilityService = async (vendorId, active_status) => {
         { new: true }
     );
 };
+//6. Get nearby Vendors
+const getNearByVendorsService = async (latitude, longitude) => {
+    if (!latitude || !longitude) {
+        throw new Error("Please share your current location");
+    }
+
+    const vendors = await Vendor.find({
+        location: {
+            $near: {
+                $geometry: { type: "Point", coordinates: [longitude, latitude] }, // GeoJSON: [lng, lat]
+                $maxDistance: 3000, // 3km
+            },
+        },
+    });
+
+    return vendors;
+};
+// 7. getting menu by the vendor id
+const getVendorMenuById = async (vendorId) => {
+    try {
+        const vendor = await Vendor.findById(vendorId).select("menu_items name");
+        if (!vendor) {
+            throw new Error("Vendor not found");
+        }
+        return vendor.menu_items;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
 
 module.exports = {
+    getVendorMenuById,
+    getNearByVendorsService,
     updateVendorProfileService,
     setVendorAvailabilityService,
     updateMenuItemsService,
