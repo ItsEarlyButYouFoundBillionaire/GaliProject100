@@ -88,6 +88,7 @@ const getNearByVendors = async (req, res) => {
         const { latitude, longitude } =
             req.body.entry[0].changes[0].value.messages[0].location;
 
+
         const vendors = await getNearByVendorsService(latitude, longitude);
 
         return res.status(200).json({ success: true, vendors });

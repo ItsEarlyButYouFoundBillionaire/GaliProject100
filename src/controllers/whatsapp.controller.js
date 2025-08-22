@@ -34,7 +34,12 @@ const handleInteractiveMessage = async (req,res)=>{
             await WhatsappService.sendStallMenu(customerPhone,menu);
         }
         else if (selectedId==="Order_summary"){
-            const order = await OrderService.createOrderDraftService(customerPhone);
+            const order = await OrderService.createOrderDraftService({
+                customerID: customerPhone,
+                vendorID: selectedVendorId,
+                order_items: selectedItems,
+                delivery_address: selectedAddress
+            });
             await WhatsappService.sendOrderSummary(customerPhone,order)
         }else{
             await WhatsappService.sendTextMessage(customerPhone,"Sorry, I did not understand that.");
