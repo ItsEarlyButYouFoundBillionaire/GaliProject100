@@ -65,8 +65,41 @@ const removeDeliveryAgentService = async (id) => {
     const result = await DeliveryAgent.findByIdAndDelete(id);
     return result ? true : false;
 };
+//function for assigning available agent;
+
+const assignAgent = async (orderId, agentId) => {
+    // Step 1: Find the delivery agent by ID
+    const agent = await DeliveryAgent.findById(agentId);
+    if (!agent) {
+        throw new Error("Delivery agent not found");
+    }
+
+    // Step 2: Check if the agent is available
+    if (agent.is_available === false) {
+        throw new Error("Delivery agent is not available");
+    }
+
+    // Step 3: Find the order
+    const order = await Order.findById(orderId);
+    if (!order) {
+        throw new Error("Order not found");
+    }
+
+    // Step 4: Update order with assigned agent
+    order.assigned_agent = agent._id;
+    order.status = "ASSIGNED"; // you can change status naming if needed
+    await order.save();
+
+    // Step 5: Update agent availability
+    agent.is_available = false;
+    await agent.save();
+
+    // Step 6: Return updated order
+    return order;
+};
 
 module.exports = {
+    assignAgent,
     registerDeliveryAgentService,
     getAllDeliveryAgentsService,
     getDeliveryAgentByIdService,
