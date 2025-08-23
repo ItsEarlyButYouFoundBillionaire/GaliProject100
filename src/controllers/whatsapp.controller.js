@@ -3,6 +3,7 @@
 const VendorService = require('../services/vendor.service');
 const OrderService = require('../services/order.service');
 const WhatsappService = require('../services/whatsapp.service');
+const Order = require('../models/Order');
 
 const handleInteractiveMessage = async (req,res)=>{
     try{
@@ -41,7 +42,27 @@ const handleInteractiveMessage = async (req,res)=>{
                 delivery_address: selectedAddress
             });
             await WhatsappService.sendOrderSummary(customerPhone,order)
-        }else{
+        }
+        else if (selectedId === "confirm_order"){ // 👈 added confirm order flow
+            const draftOrder = await Order.findOne({ customer: customerPhone, status: "draft" });
+            if(!draftOrder){
+                await WhatsappService.sendTextMessage(customerPhone,"No draft order found to confirm.");
+            } else {
+                const placedOrder = await OrderService.placeOrderService({
+                    customerID: draftOrder.customer,
+                    vendorID: draftOrder.vendor,
+                    order_items: draftOrder.order_items,
+                    total_price: draftOrder.total_price,
+                    delivery_distance_km: draftOrder.delivery_distance_km || 0,
+                    delivery_address: draftOrder.delivery_address,
+                    packaging_charge: draftOrder.packaging_charge,
+                    promo_code_applied: draftOrder.promo_code_applied
+                });
+                await WhatsappService.sendTextMessage(customerPhone,` Order placed successfully! Your order ID is ${placedOrder._id}`);
+            }
+        }
+
+        else{
             await WhatsappService.sendTextMessage(customerPhone,"Sorry, I did not understand that.");
         }
         return res.sendStatus(200)

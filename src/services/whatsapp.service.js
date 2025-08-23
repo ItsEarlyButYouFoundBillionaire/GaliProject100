@@ -1,7 +1,7 @@
  // This file is the generic WhatsApp API handler — all sending, templating, and message dispatch logic.
 
 
- const Axios = require('axios');
+ const axios = require('axios');
  const Vendor = require('../models/Vendor');
  const Order = require('../models/Order')
 
@@ -175,7 +175,7 @@
      ] : []
     }
    };
-   const response = await axios(WHATSAPP_API_URL,payload,{
+   const response = await axios.post(WHATSAPP_API_URL,payload,{
     headers: {
      Authorization: `Bearer ${ACCESS_TOKEN}`,
      "Content-Type": "application/json"
@@ -219,4 +219,65 @@
    throw error;
   }
  };
+ // send text message
+ export const sendTextMessage = async (to, bodyText) => {
+  try {
+   const payload = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    type: "text",
+    text: {
+     body: bodyText, // plain text message
+    },
+   };
 
+   const response = await axios.post(WHATSAPP_API_URL, payload, {
+    headers: {
+     Authorization: `Bearer ${ACCESS_TOKEN}`,
+     "Content-Type": "application/json",
+    },
+   });
+
+   console.log("Text message sent:", response.data);
+   return response.data;
+  } catch (error) {
+   console.error(
+       "Error sending text message:",
+       error.response?.data || error.message
+   );
+   throw error;
+  }
+ };
+
+ // 🔔 Send notification to vendor (skeleton)
+ export const sendNotificationToVendor = async (vendorPhoneNumber, templateName) => {
+  try {
+   const payload = {
+    messaging_product: "whatsapp",
+    to: vendorPhoneNumber,
+    type: "template",
+    template: {
+     name: vendor_order_notification,   // Example: "vendor_order_notification"
+     language: { code: "en_US" },
+     components: []        // ⛔ Parameters will be added later when template has placeholders
+    }
+   };
+
+   const response = await axios.post(
+       `${WHATSAPP_API_URL}/messages`,
+       payload,
+       {
+        headers: {
+         Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+         "Content-Type": "application/json"
+        }
+       }
+   );
+
+   return response.data;
+  } catch (error) {
+   console.error("❌ Error sending vendor notification:", error.response?.data || error.message);
+   throw error;
+  }
+ };

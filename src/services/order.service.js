@@ -91,7 +91,6 @@ const getOrderByIdService = async (orderID) => {
         .populate('delivery_agent');
 };
 
-
 module.exports = {
     createOrderDraftService,
     placeOrderService,
