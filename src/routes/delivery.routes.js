@@ -3,7 +3,8 @@ const router = express.Router();
 
 //importing the controller function
 const {
-    getNearbyVendors
+    getNearbyVendors,
+
 }= require('../controllers/customer.controller')
 
 //routes
