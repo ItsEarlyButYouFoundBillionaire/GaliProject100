@@ -1,15 +1,21 @@
+// src/routes/location.routes.js
+
 const express = require("express");
 const router = express.Router();
 
 const {
-    updateLocation,
-    getLocation,
+    updateAgentLocation,
+    getAgentLocation,
 } = require("../controllers/location.controller");
 
-// Route: Update location of delivery agent
-router.post("/update", updateLocation);
+// @route   POST /api/location/update
+// @desc    Update delivery agent's live location
+// @access  Public (add auth later if needed)
+router.post("/update", updateAgentLocation);
 
-// Route: Get location of delivery agent (for frontend live tracking)
-router.get("/:agentId", getLocation);
+// @route   GET /api/location/:agentId
+// @desc    Get delivery agent's current location
+// @access  Public (add auth later if needed)
+router.get("/:agentId", getAgentLocation);
 
 module.exports = router;

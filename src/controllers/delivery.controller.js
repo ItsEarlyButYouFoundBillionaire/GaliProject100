@@ -95,7 +95,7 @@ const assignAgent = async (req, res, next) => {
         const { orderId, agentId } = req.body;
 
         // Call service
-        const updatedOrder = await deliveryService.assignAgent(orderId, agentId);
+        const updatedOrder = await assignAgent(orderId,agentId)
 
         // Send response
         res.status(200).json(success("Agent assigned successfully", updatedOrder));

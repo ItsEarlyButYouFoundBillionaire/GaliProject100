@@ -27,10 +27,11 @@ const DeliveryAgentSchema = new mongoose.Schema({
             required: true,
         },
     },
-    current_location: {
-        latitude: { type: Number },
-        longitude: { type: Number },
-    },
+    // current_location: {
+    //     latitude: { type: Number },
+    //     longitude: { type: Number },
+    // },
+
     assigned_orders: [
         {
             type: mongoose.Schema.Types.ObjectId,

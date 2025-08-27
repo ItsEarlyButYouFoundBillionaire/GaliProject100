@@ -1,20 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const vendorController = require('../controllers/vendor.controller')
+const vendorController = require('../controllers/vendor.controller');
 
-// GET vendor profile by ID
+// 👤 Get vendor profile by ID
 router.get('/:id/profile', vendorController.getVendorProfile);
 
-// PUT update vendor profile (excluding menu)
+// ✏️ Update vendor profile (excluding menu)
 router.put('/:id/profile', vendorController.updateVendorProfile);
 
-// PUT update menu items
+// 🍽️ Update menu items
 router.put('/:id/menu', vendorController.updateMenuItems);
 
-// GET menu items
+// 📋 Get menu items
 router.get('/:id/menu', vendorController.getMenuItems);
 
-// PUT set vendor availability (active/notActive/outOfStock)
+// ✅ Set vendor availability (active/notActive/outOfStock)
 router.put('/:id/availability', vendorController.setVendorAvailability);
+
+// 📍 Get nearby vendors
+router.get('/nearby', vendorController.getNearByVendors);
+
+// 🍴 Get vendor menu by vendorId (alternative detailed menu fetch)
+router.get('/:vendorId/menu-items', vendorController.getVendorMenuById);
 
 module.exports = router;

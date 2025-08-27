@@ -113,8 +113,8 @@ const getVendorMenuById = async (req, res) => {
 };
 
 module.exports = {
+    getNearByVendors,
     getVendorMenuById,
-    getNearByVendorsService,
     updateVendorProfile,
     setVendorAvailability,
     updateMenuItems,
